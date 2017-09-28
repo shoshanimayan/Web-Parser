@@ -3,20 +3,29 @@ package webparser;
 import org.jsoup.nodes.*;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
+
 import javax.swing.*;
+
 import java.io.*;
+import java.util.Scanner;
 import java.awt.*;
 public class parser extends JTabbedPane{
   Document docs;
   JScrollPane spane;
   parser(){
     try{
-    docs = Jsoup.connect("http://google.com").get();
+    	Scanner scan=new Scanner(System.in);
+    	String url= scan.nextLine();
+    docs = Jsoup.connect(url).get();
     }
     catch(IOException e){e.printStackTrace(); }
     getLinks();
     addTab("Links",spane);
     addTab("Images", new images(docs));
+    addTab("Word Count", new WordCount(docs));
+    addTab("emails", new email(docs));
+    addTab("Phone Number", new phoneNumber(docs));
+
   }
 
   public void getLinks(){//retrieve links on page
@@ -30,12 +39,12 @@ public class parser extends JTabbedPane{
           linkData = docs.baseUri()+linkData.substring(1);
         else if(!linkData.substring(0,4).equals("http"));
           linkData = docs.baseUri()+linkData.substring(1);
-        JLabel label = new JLabel(linkData);
+        clickableLink label = new clickableLink(link.text(),linkData);
         linkp.add(label);
       }
     }
     spane = new JScrollPane(linkp);
-    spane.setPreferredSize(new Dimension(350,350));
+    spane.setPreferredSize(new Dimension(400,400));
   }
 
 public static void main(String[] args){
@@ -47,4 +56,3 @@ public static void main(String[] args){
   frame.setSize(500,500);
 }
 }
-
